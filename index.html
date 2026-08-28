@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="REDiff-AD: No Training and No Target Masks for Industrial Anomaly Image Generation via Diversity-Driven In-Context MMDiT.">
+  <meta name="keywords" content="Anomaly Detection, Anomaly Generation, Diffusion Model, MMDiT">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REDiff-AD: No Training and No Target Masks for Industrial Anomaly Image Generation via Diversity-Driven In-Context MMDiT</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css?v=20260828-1">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js?v=20260828-1"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">REDiff-AD: No Training and No Target Masks for Industrial Anomaly Image Generation via Diversity-Driven In-Context MMDiT</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Anonymous Authors</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Under Review</span>
+          </div>
+
+          <div class="publication-links">
+            <span class="link-block">
+              <a class="external-link button is-black is-rounded"
+                 href="https://github.com/efdefe4-droid/REDiff-AD"
+                 target="_blank" rel="noopener noreferrer">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Source Code</span>
+              </a>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="columns is-centered">
+        <img src="./static/images/Teaser_Figure.png" class="interpolation-image"
+             alt="REDiff-AD generates diverse anomalies from a single reference without training or target masks.">
+      </div>
+      <h2 class="subtitle has-text-centered">
+        <b>REDiff-AD</b> generates realistic and diverse anomaly images with pixel-level pseudo-masks
+        from a single reference, without product-specific training or manually specified target masks.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Industrial anomaly detection is challenged by the scarcity and diversity of real defects,
+            leaving insufficient anomalous data to effectively train downstream models. Existing anomaly
+            generation methods often require product-specific fine-tuning, target mask annotation, or costly
+            procedures to achieve realistic and diverse defects. We propose REDiff-AD, a framework that
+            requires neither model training nor target masks and introduces Rectified Flow MMDiT into
+            industrial anomaly generation for efficient sampling with fewer generation steps. Given a
+            normal product image and a single masked reference anomaly, REDiff-AD employs in-context
+            learning to transfer the defect appearance from the reference onto the normal image. Internal
+            attention signals generated during this process are further reused to localize the synthesized
+            anomaly, while edge and color cues refine the localization into pixel-level pseudo-masks. Two
+            lightweight modules further improve generation quality: adaptive reference conditioning enhances
+            defect fidelity, while diversity guidance promotes varied defect patterns without additional
+            training. Experiments on MVTec-AD demonstrate a strong tradeoff between realism and diversity,
+            together with competitive downstream anomaly classification, detection, and localization performance.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Framework. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Framework</h2>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <img src="./static/images/REDiff-AD_pipeline.png" class="interpolation-image"
+           alt="REDiff-AD pipeline overview.">
+    </div>
+    <br/>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Overview of REDiff-AD.</b> Semantic localization first defines a loose editable region on the target.
+            A frozen in-context MMDiT transfers the masked reference, with AAM strengthening weak anomalies
+            and DOK reducing reference-shape copying. Aggregated target-to-reference attention is then refined
+            into the output pseudo-mask.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Framework. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <h2 class="title is-3">Key Modules</h2>
+
+        <!-- DOK and AAM -->
+        <h3 class="title is-4">Effects of DOK and AAM</h3>
+        <div class="content has-text-justified">
+          <p>
+            <b>Diversity Orthogonal K (DOK)</b> relaxes the reference shape direction in Key space without
+            discarding the appearance carried by Value features, promoting varied defect shapes.
+            <b>Attention Adaptive Module (AAM)</b> uses stepwise attention feedback to strengthen reference
+            conditioning only when defect formation is insufficient, improving robustness for small defects.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-three-fifths has-text-centered">
+            <img src="./static/images/DOK_AAM.png" class="interpolation-image"
+                 alt="Effects of DOK and AAM.">
+          </div>
+        </div>
+        <br/>
+
+        <!-- Attention Analysis -->
+        <h3 class="title is-4">Attention-Based Pseudo-Mask Generation</h3>
+        <div class="content has-text-justified">
+          <p>
+            We compare target-to-target (T2T) and target-to-reference (T2R) responses over all 57 FLUX.1 Fill
+            blocks and find that T2R provides clearer defect&ndash;background separation. Nine of the ten selected
+            expert blocks belong to the single-stream stage.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-half has-text-centered">
+            <img src="./static/images/t2t_t2r.png" class="interpolation-image"
+                 alt="T2T vs T2R attention comparison.">
+            <p>T2R achieves higher localization scores across all metrics.</p>
+          </div>
+          <div class="column is-half has-text-centered">
+            <img src="./static/images/mask_comparsion.png" class="interpolation-image"
+                 alt="Block selection and pixel-level refinement.">
+            <p>Selected blocks produce cleaner coarse masks; pixel-level refinement recovers precise boundaries.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Interactive Generated Anomaly Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <section class="defect-showcase" aria-labelledby="defect-showcase-title">
+          <header class="defect-showcase__header">
+            <h2 id="defect-showcase-title" class="title is-3">Generated Anomaly Images and Corresponding Masks</h2>
+            <div class="content has-text-justified">
+              <p>
+                <b>Hover over any Reference or Ours image to switch it to the corresponding mask.</b>
+                Move the pointer away to return to the image; on touch devices, tap to toggle.
+                All generated images shown below are produced by <b>REDiff-AD (Ours)</b> across
+                all 15 MVTec-AD products and 73 defect types.
+              </p>
+            </div>
+          </header>
+
+          <div class="defect-showcase__legend" aria-label="Image legend">
+            <span><i class="legend-swatch legend-swatch--normal"></i>Normal</span>
+            <span><i class="legend-swatch legend-swatch--reference"></i>Reference / GT mask</span>
+            <span><i class="legend-swatch legend-swatch--ours"></i>Generated by REDiff-AD (Ours) / Pseudo-mask</span>
+          </div>
+
+          <div class="product-tabs" role="tablist" aria-label="MVTec-AD product categories"></div>
+
+          <div class="product-stage">
+            <aside class="normal-panel">
+              <div class="normal-panel__heading">
+                <div>
+                  <p>Normal</p>
+                  <h4 id="active-product-name">Product</h4>
+                </div>
+              </div>
+              <figure class="normal-figure">
+                <img id="active-normal-image" src="" alt="" decoding="async">
+                <figcaption>No defect</figcaption>
+              </figure>
+            </aside>
+
+            <div id="defect-results-panel" class="defect-results" role="tabpanel"
+                 tabindex="0" aria-live="polite">
+              <div class="defect-results__heading">
+                <p id="active-product-summary"></p>
+                <p class="defect-results__hint">Image <span aria-hidden="true">&#8596;</span> mask</p>
+              </div>
+              <div id="defect-grid" class="defect-grid"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+<!--/ Interactive Generated Anomaly Results -->
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <h2 class="title is-3">Experimental Results</h2>
+
+        <!-- Qualitative Comparison -->
+        <h3 class="title is-4">Qualitative Comparison</h3>
+        <div class="content has-text-justified">
+          <p>
+            We evaluate on all 15 categories of MVTec-AD. Training-based methods can introduce appearance
+            distortion, while target-mask-dependent training-free methods may place defects outside the
+            product region. REDiff-AD generates diverse defects while preserving the target product appearance.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <img src="./static/images/Qualitative.png" class="interpolation-image"
+               alt="Qualitative comparison on MVTec-AD.">
+        </div>
+        <br/>
+
+        <!-- Generation Quality Table -->
+        <h3 class="title is-4">Generation Quality and Diversity</h3>
+        <div class="content has-text-justified">
+          <p>
+            REDiff-AD achieves the <b>lowest average KID (31.09)</b> while maintaining competitive
+            diversity (IC-LPIPS 0.30), demonstrating a strong realism&ndash;diversity balance.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-four-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Training</th>
+                  <th>Target Mask</th>
+                  <th>KID &darr;</th>
+                  <th>IC-LPIPS &uarr;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AnomalyDiffusion</td><td>Yes</td><td>Yes</td><td>101.91</td><td><u>0.30</u></td></tr>
+                <tr><td>DualAnoDiff</td><td>Yes</td><td>Yes</td><td>114.73</td><td><b>0.39</b></td></tr>
+                <tr><td>TF-IDG</td><td>No</td><td>Yes</td><td><u>32.38</u></td><td>0.28</td></tr>
+                <tr><td>O2MAG</td><td>No</td><td>Yes</td><td>47.63</td><td>0.29</td></tr>
+                <tr style="background-color: #fff3cd;"><td><b>REDiff-AD (Ours)</b></td><td><b>No</b></td><td><b>No</b></td><td><b>31.09</b></td><td><u>0.30</u></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br/>
+
+        <!-- Detection Table -->
+        <h3 class="title is-4">Downstream Anomaly Detection &amp; Localization</h3>
+        <div class="content has-text-justified">
+          <p>
+            REDiff-AD achieves the <b>best average AP-I (99.4)</b> among all methods and competitive
+            pixel-level localization performance, without fine-tuning or precise target masks.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-four-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>AP-I &uarr;</th>
+                  <th>AUC-P &uarr;</th>
+                  <th>AP-P &uarr;</th>
+                  <th>F1-P &uarr;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AnomalyDiffusion</td><td><u>98.8</u></td><td><b>98.5</b></td><td><b>80.1</b></td><td><b>75.2</b></td></tr>
+                <tr><td>DualAnoDiff</td><td>97.2</td><td><u>98.4</u></td><td>77.5</td><td>73.5</td></tr>
+                <tr><td>TF-IDG</td><td>98.6</td><td>98.0</td><td>75.4</td><td>72.1</td></tr>
+                <tr><td>O2MAG</td><td>98.6</td><td>97.9</td><td>76.6</td><td>72.8</td></tr>
+                <tr style="background-color: #fff3cd;"><td><b>REDiff-AD (Ours)</b></td><td><b>99.4</b></td><td>98.0</td><td><u>77.8</u></td><td><u>74.1</u></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br/>
+
+        <!-- Efficiency Table -->
+        <h3 class="title is-4">Efficiency Comparison</h3>
+        <div class="content has-text-justified">
+          <p>
+            With INT4-quantized FLUX.1 Fill and lightweight modules, REDiff-AD takes only 10s at
+            20 steps with 9 GB peak VRAM&mdash;below TF-IDG (22 GB) and O2MAG (16 GB)&mdash;supporting
+            large-scale generation on consumer-grade GPUs.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-three-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Time (s/img)</th>
+                  <th>Peak VRAM</th>
+                  <th>KID &darr;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>TF-IDG</td><td>22 s</td><td>22 GB</td><td><u>8.62</u></td></tr>
+                <tr><td>O2MAG</td><td>20 s</td><td><u>16 GB</u></td><td>9.74</td></tr>
+                <tr style="background-color: #fff3cd;"><td><b>REDiff-AD (20 steps)</b></td><td><b>10 s</b></td><td><b>9 GB</b></td><td>9.26</td></tr>
+                <tr><td>REDiff-AD (30 steps)</td><td><u>16 s</u></td><td><b>9 GB</b></td><td>8.87</td></tr>
+                <tr><td>REDiff-AD (40 steps)</td><td>22 s</td><td><b>9 GB</b></td><td><b>8.53</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <h2 class="title is-3">Ablation Study</h2>
+
+        <!-- Component Ablation -->
+        <h3 class="title is-4">Component Ablation</h3>
+        <div class="columns is-centered">
+          <div class="column is-four-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>In-context</th>
+                  <th>AAM</th>
+                  <th>DOK</th>
+                  <th>KID &darr;</th>
+                  <th>IC-LPIPS &uarr;</th>
+                  <th>Acc. &uarr;</th>
+                  <th>AP-I &uarr;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>&check;</td><td></td><td></td><td>35.62</td><td><u>0.28</u></td><td>61.07</td><td>97.5</td></tr>
+                <tr><td>&check;</td><td>&check;</td><td></td><td><b>28.92</b></td><td>0.27</td><td><u>67.91</u></td><td><u>98.6</u></td></tr>
+                <tr><td>&check;</td><td></td><td>&check;</td><td>32.04</td><td><b>0.30</b></td><td>63.31</td><td>98.1</td></tr>
+                <tr style="background-color: #fff3cd;"><td>&check;</td><td>&check;</td><td>&check;</td><td><u>31.09</u></td><td><b>0.30</b></td><td><b>70.77</b></td><td><b>99.4</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br/>
+
+        <!-- Mask Ablation -->
+        <h3 class="title is-4">Mask-Generation Ablation</h3>
+        <div class="columns is-centered">
+          <div class="column is-four-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>ROI only</th>
+                  <th>No block selection</th>
+                  <th>Selected blocks</th>
+                  <th>Refined mask</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AUC-P</td><td>95.43</td><td>96.48</td><td><u>97.15</u></td><td><b>98.03</b></td></tr>
+                <tr><td>AP-P</td><td>69.98</td><td>70.16</td><td><u>72.82</u></td><td><b>77.82</b></td></tr>
+                <tr><td>F1-P</td><td>67.73</td><td>67.85</td><td><u>70.24</u></td><td><b>74.05</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+
+        <h2 class="title is-3">Zero-Shot Anomaly Generation</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            REDiff-AD also supports zero-shot generation by replacing the real anomaly reference with an
+            ordinary everyday image. A single visual reference is sufficient to generate diverse anomalies
+            without additional training or target masks.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-three-fifths has-text-centered">
+            <img src="./static/images/zeroshot_qualitative.png" class="interpolation-image"
+                 alt="Zero-shot comparison on Hazelnut.">
+          </div>
+        </div>
+        <br/>
+        <div class="columns is-centered">
+          <div class="column is-three-fifths has-text-centered">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth" style="font-size: 0.9em;">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>KID &darr;</th>
+                  <th>IC-L &uarr;</th>
+                  <th>AP-I</th>
+                  <th>AUC-P</th>
+                  <th>AP-P</th>
+                  <th>F1-P</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>AnoStyler</td><td>96.48</td><td>0.07</td><td>94.63</td><td>97.17</td><td>66.02</td><td>61.94</td></tr>
+                <tr style="background-color: #fff3cd;"><td><b>REDiff-AD</b></td><td><b>38.54</b></td><td><b>0.32</b></td><td><b>95.54</b></td><td><b>97.31</b></td><td><b>66.13</b></td><td><b>70.72</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website accompanies the anonymous WACV submission. Generated examples are produced by
+            REDiff-AD (Ours). The <a href="https://github.com/efdefe4-droid/REDiff-AD"
+            target="_blank" rel="noopener noreferrer">source code is available on GitHub</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
